@@ -1,0 +1,246 @@
+<HTML>
+<HEAD>
+<TITLE>Wavelets:FAQ</TITLE>
+<link rel="icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+</HEAD>
+<BODY>
+<H1>Wavelets: Frequently Asked Questions</H1>
+
+
+<A HREF="#average">Averaging wavelet power spectra</A>
+<P>
+<A HREF="#bias">Bias of the Global Wavelet Spectrum</A>
+<P>
+<A HREF="#phase">Significance levels for wavelet phase differences</A>
+<P>
+<A HREF="#orthogonal">Orthogonal, orthonormal, and nonorthogonal,
+	and the Morlet</A>
+<P>
+<A HREF="#padding">Padding with zeroes up to a power-of-two</A>
+<P>
+<A HREF="#scale">Period versus Scale</A>
+<P>
+<A HREF="#significance">Significance Levels: Do they mean anything?</A>
+<HR>
+&#160;<P>
+
+
+<!------------------------------------------------------------------------>
+<A NAME="average"><HR></A>
+<B>If I have several realizations of a time series, is it okay to average
+the wavelet power spectra together?</B>
+<BLOCKQUOTE>
+Usually, it is NOT okay to average different wavelet power spectrum (WPS)
+together. The whole purpose of wavelet analysis is to see the
+time-frequency distribution, i.e. how the power changes
+over time. If you have different realizations of a time series
+(drawn from the same distribution, but independent of each other),
+then the WPS should have a similar structure, but the location of
+individual regions of high power will be different for each WPS.
+Averaging them together will then destroy the information of where
+the regions of high power are located, and will return only the
+average distribution of power versus scale (if this is all you are
+interested in, then you are better off using Fourier analysis).
+</BLOCKQUOTE>
+<P>
+
+<!------------------------------------------------------------------------>
+<A NAME="bias"><HR></A>
+<IMG SRC="images/wave_bias_faq.gif" ALIGN=right ALT="Wavelet bias">
+<B>I notice that if I have a time series with
+two sine waves of the same amplitude but different frequency,
+then in the Fourier power spectrum they have the same power, but
+in the global wavelet spectrum the higher-frequency peak is much smaller
+than the lower-frequency peak.</B>
+<BLOCKQUOTE>
+That's correct, and it's due to the width of the
+wavelet filter in Fourier space. At small wavelet scales (high 
+frequency), the wavelet is very broad in frequency, therefore any 
+peaks in the spectrum get smoothed out. At large wavelet scales, the 
+wavelet is more narrow in frequency, therefore the peaks are sharper 
+and have a larger amplitude.
+<P>
+If you want it in mathematical terms, the global wavelet spectrum
+is an "efficient" estimator of the "true" power spectrum,
+but it is also "biased". The bias means that there may
+be a large difference between the global wavelet spectrum
+and the "true" Fourier spectrum.
+<P>
+So, if you have sharp peaks in your power spectrum, don't
+use the global wavelet spectrum to determine the relative
+magnitude of your peaks.
+
+</BLOCKQUOTE>
+<BR CLEAR=all>
+<P>
+
+<!------------------------------------------------------------------------>
+<A NAME="phase"><HR></A>
+<B>How do I compute significance levels for the wavelet
+phase difference of two time series?</B>
+<BLOCKQUOTE>
+
+The phase angle should be distributed "uniformly" between -180&#176; and
++180&#176;. You can't really do a <I>significance</I> test since there is
+no ``preferred'' value (e.g. for wavelet power the preferred value is the
+background spectrum). But what you can do is a ``confidence interval''
+about your actual phase differences. If the 95% confidence interval
+doesn't overlap zero, then you can be confident that the phase difference
+is significant.
+<P>
+
+By the Central Limit Theorem, if <I>X</I><SUB>1</SUB>,
+<I>X</I><SUB>2</SUB>,... are independent random variables with finite mean
+<I>m</I> and variance <I>s</I><SUP>2</SUP>, then the average of
+<I>X</I><SUB>1</SUB> + <I>X</I><SUB>2</SUB> + ... +
+<I>X</I><SUB><I>n</I></SUB> is normally distributed with mean <I>m</I> and
+variance <I>s</I><SUP>2</SUP>/<I>n</I>. The uniform distribution for the
+interval [a,b] has <I>m</I>=0.5(a+b) and
+<I>s</I><SUP>2</SUP>=(b-a)<SUP>2</SUP>/12. By the Central Limit Theorem,
+the average of <I>n</I> phase angles (interval [-Pi,+Pi]) is normally
+distributed with <I>m</I>=0 and <I>s</I><SUP>2</SUP>=4
+Pi<SUP>2</SUP>/12<I>n</I>.
+<P>
+
+The 95% confidence interval for the average of <I>n</I> phase angles is
+&#177;1.96 <I>s</I> = &#177;1.96 (2 Pi) (12<I>n</I>)<SUP>-&#189;</SUP>.
+In degrees this is &#177;204&#176; <I>n</I><SUP>-&#189;</SUP>.
+<P>
+
+Despite the above discussion (given for background only),
+for the wavelet phase difference it is difficult to determine
+the "effective" number of variables <I>n</I> since they are <I>not</I>
+independent. In this case it is better to use a Monte Carlo method where you
+take your two signals and add random noise to each of them.
+By repeating this say a 1000 times you can compute the 95% confidence
+interval about your ``true'' phase difference.
+
+</BLOCKQUOTE>
+<P>
+
+<!------------------------------------------------------------------------>
+<A NAME="orthogonal"><HR></A>
+<B>What's the difference between orthogonal, orthonormal, and nonorthogonal?
+And, is the Morlet wavelet orthogonal?</B>
+<BLOCKQUOTE>
+To be orthonormal, a set of wavelet functions must be complete (i.e. you
+have to have enough of them), and each must be orthogonal to
+the others (i.e. no overlap or projection). The "normal" part just
+means that each wavelet is normalized to have total energy of 1.0.
+<P>
+For the Morlet wavelet, there are two possibilities:
+<OL>
+<LI>the continuous wavelet transform: here you are sliding the wavelet
+along your time series. Therefore, each wavelet overlaps the ones
+next to it, which gives lots of redundant information. This is NOT orthogonal.
+<LI>the discrete wavelet transform: here you skip along the time series,
+only doing the wavelet transform where the wavelet no longer overlaps
+the previous ones.
+<UL>
+<LI>For the Morlet wavelet, this is approximately orthogonal,
+      but not exactly. Due to the extended tails of the Gaussian, it is not
+      possible to construct a truly orthogonal set for the Morlet.
+<LI>For other wavelets such as the Daubechies, it is possible to
+      construct an exactly orthogonal set.
+</UL>
+</OL>
+<P>
+So the moral is: if you want to do the continuous wavelet transform,
+then you aren't worried about orthogonality, and you can use the Morlet.
+If you want to do the discrete wavelet transform, don't use the Morlet.
+</BLOCKQUOTE>
+
+<!------------------------------------------------------------------------>
+<A NAME="padding"><HR></A>
+<B>Why pad with zeroes? If I have a time series with 511 points,
+why would I want to
+pad up to 1024 points (2<SUP>10</SUP>) rather than 512?</B>
+<BLOCKQUOTE>
+For the continuous wavelet transform there will be problems near the
+edge of the time series, as the wavelet starts to run off the end.
+To minimize these problems, the time series can be padded with zeroes.
+This reduces the wavelet power near the edges, but it avoids wrap-around
+effects.
+<P>
+It is useful to pad up to a power-of-two (such as 1024), as this
+makes the Fourier transform (FFT) go faster.
+In the above example with 511 points,
+padding up to 512 points (i.e. adding one zero to the end) will make
+the FFT faster, but will not help at all with the edge effects, especially
+at the largest scales. Therefore, one should pad with 513 zeroes to make
+a total of 1024 points.
+</BLOCKQUOTE>
+
+<!------------------------------------------------------------------------>
+<A NAME="scale"><HR></A>
+<B>What's the difference between period and scale?</B>
+<BLOCKQUOTE>
+The scale refers to the width of the wavelet. As the scale increases and
+the wavelet gets wider, it includes more of the time series,
+and the finer details get smeared out. The scale can be defined as
+the distance between oscillations in the wavelet (e.g. for the Morlet),
+or it can be some average width of the entire wavelet
+(e.g. for the Marr or Mexican hat).
+<P>
+The period (or inverse frequency) is the approximate Fourier
+period that corresponds to the oscillations within the wavelet.
+For all wavelets, there is a one-to-one relationship
+between the scale and period. The relationship can be derived by
+finding the wavelet transform of a pure cosine wave with
+a known Fourier period, and then computing the scale at which the
+wavelet power spectrum reaches its maximum.
+<P>
+For some wavelets the period has
+more meaning than others. For the Morlet, which has several smooth
+oscillations, the period is a well-defined quantity which measures
+the approximate Fourier period of the signal. For the Daubechies, which
+has irregularly-spaced oscillations, the period has less meaning and
+should probably be ignored.
+</BLOCKQUOTE>
+
+<!------------------------------------------------------------------------>
+<A NAME="significance"><HR></A>
+<B>Does the 5% significance level mean anything for the wavelet power
+spectrum, especially when nearby points in the
+spectrum are highly correlated?</B>
+<BLOCKQUOTE>
+Just like any significance test, the 5% significance level 
+(95% confidence level) implies that for a random time series,
+5% of the points will be 
+above that threshold just by chance. Therefore, the 5% contours on a 
+wavelet plot must be interpreted carefully.
+<P>
+You need to look at:
+<UL>
+<LI>how large are the 5% regions compared to that expected by chance?
+<LI>are the 5% regions distributed randomly or with some pattern?
+</UL>
+Both of these are subjective 
+measures. In Fourier analysis one has the same problem: do you have a 
+single peak that barely goes above the 5% level (in which case it 
+could be spurious), or do you have a broad peak that is well above the 
+significance level?
+<P>
+The following approach might be helpful:
+<OL>
+<LI>Look at your time series with Fourier analysis, to see if there
+are any interesting peaks (you may already know this without having to 
+do the Fourier).
+<LI>Look at the wavelet power spectrum, and concentrate your attention 
+within the scale range where you have peaks. Look for any signs of 
+"nonstationarity". There are two main things to look for:<BR>
+&#160;&#160;&#160;&#160;<I>Amplitude modulation:</I> Is the wavelet power clumped together during 
+certain intervals?<BR>
+&#160;&#160;&#160;&#160;<I>Frequency modulation:</I> Does the period change with time?<BR>
+The 5% regions 
+will then help you determine whether this is a significant result or 
+not.
+</OL>
+</BLOCKQUOTE>
+<P>
+<HR>
+&#160;<P>
+<A HREF="/research/wavelets/">back to Wavelets</A>
+</BODY>
+</HTML>

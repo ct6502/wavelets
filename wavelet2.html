@@ -1,0 +1,206 @@
+<HTML>
+
+<HEAD>
+<TITLE>Wave:Wavelets 2</TITLE>
+<link rel="icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+</HEAD>
+	
+<BODY BGCOLOR="white">
+
+	<H1>Wavelet Analysis</H1>
+
+	<H2>
+	<UL>
+		<LI><A HREF="wavelet1.html">Introduction</A>
+		<LI><FONT COLOR="green">Wavelets</FONT>
+		<LI><A HREF="wavelet3.html">Algorithms</A>
+		<LI><A HREF="montecarlo.html">Monte Carlo</A>
+		<LI><A HREF="references.html">References</A>
+	</UL>
+	</H2>
+	
+	<HR><!----------------------------------------------------------------->
+
+	<P>
+	<H2>
+	Wavelets
+	</H2>
+	
+	&nbsp &nbsp &nbsp In the <A HREF="wavelet1.html">previous section</A>
+	we saw how one measure of the stationarity
+	of a time series was to calculate the running variance
+	using a fixed-width window. Although we pointed out the disadvantage
+	of using a fixed-width window, one could repeat
+	the analysis with a variety of window widths. By smoothly varying the
+	window width one could then build a picture of the changes in variance
+	versus both time and window width. The obvious problem with this
+	technique is the simple "boxcar" shape of the window function, which
+	introduces edge effects such as ringing. As mentioned earlier, using
+	such a black-box-car, we still have no information on what is going on
+	within the box, but only recover the average energy.
+	<P>
+
+	&nbsp &nbsp &nbsp In Figure 2a we see an example of a wave "packet", of finite duration
+	and with a specific frequency. One could imagine using such a shape
+	as our window function for our analysis of variance. This "wavelet"
+	has the advantage of incorporating a wave of a certain period, as
+	well as being finite in extent. In fact, the wavelet shown in Figure 2a
+	(called the Morlet wavelet) is nothing more than a Sine wave
+	(green curve in Figure 2b) multiplied by a Gaussian envelope (red curve).
+	<P>
+	
+	<HR><!----------------------------------------------------------------->
+		<CENTER>
+			<IMG SRC="images/morlet.gif" ALT="Morlet" WIDTH=512 HEIGHT=128>
+		</CENTER>
+		<BR CLEAR=all>
+
+		<DL COMPACT>
+			<DT>
+			<B>Fig 2.</B>
+			<DD>(a) Morlet wavelet of arbitrary width and amplitude,
+			with time along the x-axis. (b) Construction of the Morlet
+			wavelet (blue dashed) as a Sine curve (green) modulated by
+			a Gaussian (red).
+		</DL>
+	<HR><!----------------------------------------------------------------->
+	<P>
+
+	&nbsp &nbsp &nbsp Assuming that the total width of this wavelet is about 15 years,
+	we can find the correlation
+	between this curve and the first 15 years
+	of our time series shown in
+	<A HREF="wavelet1.html#fig1">Figure 1</A>.
+	This single number gives us a
+	measure of the projection of this wave packet on our data during
+	the 1876-1890 period, i.e. how much [amplitude] does our 15-year
+	period resemble a Sine wave of this width [frequency]. By sliding this
+	wavelet along our time series one can then construct a new time series
+	of the projection amplitude versus time.
+	<P>
+	
+	&nbsp &nbsp &nbsp Finally, one can then vary the "scale" of the wavelet by changing
+	its width. This is the real advantage of wavelet analysis over
+	a moving Fourier spectrum.
+	For a window of a certain width, the sliding FFT
+	is fitting different numbers of waves, i.e. there can be many
+	high-frequency waves within a window, while the same window can only
+	contain a few (or less than one) low-frequency waves. The wavelet analysis
+	always uses a wavelet of the exact same shape, only the size scales up
+	or down with the size of the window.
+	<P>
+
+	<A NAME="eqn2.1">
+	&nbsp &nbsp &nbsp In addition to the amplitude of any periodic signals,
+	we would also like information on the phase.
+	In practice,
+	the Morlet wavelet shown in Figure 2a is defined as the product
+	of a complex exponential wave and a Gaussian envelope:
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(2.1)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn2.1.gif" ALIGN=bottom WIDTH=228 HEIGHT=28>
+	<P>
+
+	<A NAME="eqn2.2">
+	where <I>Psi</I> is the wavelet value at non-dimensional time <I>eta</I>,
+	and <I>w<SUB>0</SUB></I> is the wavenumber. This is the basic wavelet
+	function, but we now need some way to change the
+	overall size as well as slide the entire wavelet along in time.
+	We thus define the "scaled wavelets" as:
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(2.2)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn2.2.gif" ALIGN=center WIDTH=375 HEIGHT=56>
+	<P>
+
+	where <I>s</I> is the "dilation" parameter used to change the scale,
+	and <I>n</I> is the translation parameter used to slide in time.
+	The factor of <I>s</I><SUP>-1/2</SUP> is a normalization to keep the total
+	energy of the scaled wavelet constant.
+	<P>
+	
+	<A NAME="eqn2.3">
+	&nbsp &nbsp &nbsp We are given a time series <I>X</I>, with
+	values of <I>x<SUB>n</SUB></I>, at time index <I>n</I>. Each value is
+	separated in time by a constant time interval <I>dt</I>.
+	The wavelet transform <I>W<SUB>n</SUB>(s)</I>
+	is just the inner product (or convolution) of the
+	wavelet function with our original timeseries:
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(2.3)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn2.3.gif" ALIGN=center WIDTH=288 HEIGHT=61>
+	</P>
+
+	where the asterisk (*) denotes complex conjugate.
+	<P>
+	
+	&nbsp &nbsp &nbsp The above integral can be evaluated for
+	various values of the scale <I>s</I>
+	(usually taken to be multiples of the lowest possible frequency),
+	as well as all values of <I>n</I> between the start and end dates.
+	A two-dimensional picture of the variability can then be constructed
+	by plotting the wavelet amplitude and phase.
+	<P>
+	
+	<A NAME="fig3"></A>
+	&nbsp &nbsp &nbsp Figure 3 shows the power (absolute value
+	squared) of the wavelet transform for the NINO3 SST data.
+	The (absolute value)<SUP>2</SUP> gives information on the relative
+	power at a certain scale and a certain time.
+	A plot of the amplitude and phase
+	would show the actual oscillations of the individual wavelets, rather
+	than just their magnitude.
+	<P>
+
+	<HR><!----------------------------------------------------------------->
+		<CENTER>
+			<IMG SRC="images/nino3_wave.png" ALT="NINO3 Wavelet"
+                WIDTH=436 HEIGHT=400>
+		</CENTER>
+		<BR CLEAR=all>
+
+		<DL COMPACT>
+			<DT>
+			<B>Fig 3.</B>
+			<DD>(a) Time series of El Ni&ntilde;o sea surface temperature.
+            (b) The wavelet power spectrum, using the Morlet wavelet.
+			The <I>x</I>-axis is the wavelet location in time.
+			The <I>y</I>-axis is the wavelet period in years.
+            The black contours are the 10% significance regions, using a
+            red-noise background spectrum.
+            The red areas indicate that high El Ni&ntilde;o activity
+            occurred during 1880-1920 and 1965-present, while 1920-1960
+            was relatively calm.
+		</DL>
+	<HR><!----------------------------------------------------------------->
+	<P>
+	
+	&nbsp &nbsp &nbsp Comparing Figures <A HREF="wavelet1.html#fig1">1</A> and 3
+	it is now much clearer that there
+	was large power in the 2-7 year ENSO period during both the earlier
+	and latter parts of this century.
+	In addition we can now see hints of a 16-year
+	oscillation as well as power at even lower frequencies.
+	<P>
+
+	&nbsp &nbsp &nbsp The wavelet transform also gives information on changes in frequency
+	that may have occured. Thus, from 1960-1990
+	the ENSO time band (2-7 years) seems to have undergone a slow oscillation
+	in period from a 3-year period between events back in 1965 up to
+	about a 5-year period in the early 1980s.
+	<P>
+
+	<CENTER>
+		<H3>
+		-- <A HREF="wavelet3.html">on to Algorithms</A> --
+		</H3>
+	</CENTER>
+
+	<HR><!----------------------------------------------------------------->
+	<A HREF="./">back to Wavelet Home Page</A>
+
+</BODY>
+</HTML>

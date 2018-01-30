@@ -1,0 +1,180 @@
+<HTML>
+
+<HEAD>
+<TITLE>Wave:Wavelets 3</TITLE>
+<link rel="icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+</HEAD>
+	
+<BODY BGCOLOR="white">
+
+	<H1>Wavelet Analysis</H1>
+
+	<H2>
+	<UL>
+		<LI><A HREF="wavelet1.html">Introduction</A>
+		<LI><A HREF="wavelet2.html">Wavelets</A>
+		<LI><FONT COLOR="green">Algorithms</FONT>
+		<LI><A HREF="montecarlo.html">Monte Carlo</A>
+		<LI><A HREF="references.html">References</A>
+	</UL>
+	</H2>
+	
+	<HR><!----------------------------------------------------------------->
+
+	<P>
+	<H2>
+	Scales
+	</H2>
+	
+	&nbsp &nbsp &nbsp In the <A HREF="wavelet2.html">previous section</A>
+	we saw how one can use a typical wavelet (the Morlet) to decompose
+	a time series into time-frequency phase space. We now turn to the actual
+	computation of the wavelet transform.
+	<P>
+
+	&nbsp &nbsp &nbsp The first thing to consider is the shape of the wavelet.
+	For decomposing the NINO3 SST data, we chose the Morlet wavelet because:
+	<OL>
+		<LI>it is commonly used,
+		<LI>it's simple,
+		<LI>it looks like a wave.
+	</OL>
+	There are an infinite number of other mother wavelets that could be chosen
+	(see Farge 1992 for examples).
+	<P>
+	
+	&nbsp &nbsp &nbsp For the Morlet wavelet transform, where the mother
+	wavelet is:
+
+	<P ALIGN=center>
+		<IMG SRC="images/wl_eqn2.1.gif" ALT="Eqn 2.1" ALIGN=center WIDTH=228 HEIGHT=28>
+	</P>
+
+	we must first choose the wavenumber <I>w<SUB>0</SUB></I>, which gives
+	the number of oscillations within the wavelet itself. One condition
+	of the wavelet transform is that the average of the wavelet itself
+	must be zero. In practice, if we choose <I>w<SUB>0</SUB></I>=6, then
+	the errors due to non-zero mean are smaller than the typical computer
+	round-off errors (Farge 1992).
+	<P>
+
+	&nbsp &nbsp &nbsp Our next choice is a set of scaling parameters <I>s</I>,
+	such that we adequately sample all the frequencies present in our
+	time series. We first choose the smallest resolvable scale,
+	<I>s</I><SUB>0</SUB>, as some multiple of our time resolution, <I>dt</I>.
+	For the NINO3 SST data, we have seasonal data, thus <I>dt</I> = 0.25 years.
+	The smallest wavelet we could possibly resolve is 2<I>dt</I>, thus
+	we choose <I>s</I><SUB>0</SUB> = 2<I>dt</I> = 0.5 years.
+	<A NAME="eqn3.1"><A NAME="eqn3.1b">
+	The larger scales (longer periods) are chosen as power-of-two multiples
+	of this smallest scale,
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(3.1a)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn3.1.gif" ALIGN=center WIDTH=283 HEIGHT=25>
+	<P>
+        <FONT SIZE=4 COLOR=00FF00>(3.1b)</FONT> . . . . . . . . . . </A>
+        <IMG SRC="images/wl_eqn3.1b.gif" ALIGN=center WIDTH=229 HEIGHT=24>
+
+	<P>
+
+	The largest scale chosen should be less than 1/2 the length of the
+	entire time series. The choice of scales for the NINO3 SST data is
+	shown on the right-hand axis of <A HREF="wavelet2.html#fig3">Figure 3</A>.
+	In theory, if these scales are chosen wisely, then one
+	can construct an orthogonal complete basis set. In reality, one usually
+	over-samples the scales so as to provide information on
+	freqencies in between the orthogonal scales. Thus, in Figure 3, the
+	scales have been over-sampled by choosing 10 sub-scales within each
+	scale.
+	<P>
+
+	<H2>
+	Algorithms
+	</H2>
+
+	<A NAME="eqn3.2">
+    <A NAME="eqn3.3">
+	&nbsp &nbsp &nbsp It is possible to compute the wavelet transform in
+	the time domain using <A HREF="wavelet2.html#eqn2.3">Eqn 2.3</A>.
+	However, it is much simpler to use the fact that the wavelet transform
+	is the convolution between the two functions <I>x</I> and <I>Psi</I>,
+	and to carry out the wavelet transform in Fourier space using the
+	Fast Fourier Transform (FFT).
+	In the Fourier domain, the wavelet transform is simply,
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(3.2)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn3.2.gif" ALIGN=center WIDTH=276 HEIGHT=61>
+	<P>
+
+	<A NAME="eqn3.4">
+	where the ^ indicates the Fourier transform (FT), and the Fourier transform
+	of the time series is given by:
+
+    <P>
+        <FONT SIZE=4 COLOR=00FF00>(3.3)</FONT> . . . . . . . . . . </A>
+        <IMG SRC="images/wl_eqn3.3.gif" ALIGN=center WIDTH=227 HEIGHT=60>
+    <P>
+
+	To use this formula,
+	the FT of the wavelet function should be known analytically.
+	In addition, the wavelets must be normalized as:
+
+	<P>
+		<FONT SIZE=4 COLOR=00FF00>(3.4)</FONT> . . . . . . . . . . </A>
+		<IMG SRC="images/wl_eqn3.4.gif" ALIGN=center WIDTH=258 HEIGHT=55>
+	<P>
+
+	Unlike the convolution, the FFT method allows the computation of
+	all <I>n</I> points simultaneously, and can be efficiently coded using
+	any standard FFT package.
+	<P>
+
+	&nbsp &nbsp &nbsp The steps to compute the wavelet transform for a time
+	series are thus:
+	<OL>
+		<LI>Choose a mother wavelet,
+		<LI>Find the Fourier transform of the mother wavelet,
+		<LI>Find the Fourier transform of the time series,
+		<LI>Choose a minimum scale <I>s</I><SUB>0</SUB>, and all other scales,
+		<LI>For each scale, do:
+		<UL>
+			<LI>Using Eqn. 3.4 (or whatever is appropriate for your
+				mother wavelet), compute the daughter wavelet at that scale;
+			<LI>Normalize the daughter wavelet by dividing by the square-root
+				of the total wavelet variance (the total of
+				(<I>Psi</I>)<SUP>2</SUP> should then be one, thus preserving
+				the variance of the time series);
+			<LI>Multiply by the FT of your time series;
+			<LI>Using Eqn. 3.2, inverse transform back to real space;
+		</UL>
+		<LI>Make a contour plot.
+	</OL>
+	<P>
+	
+	&nbsp &nbsp &nbsp One problem with performing the wavelet transform in
+	Fourier space is that this assumes the time series is periodic. The
+	result is that signals in the wavelet transform at one end of the
+	time series will get wrapped around to the other end. This effect
+	is more pronouced at larger scales as the influence of each wavelet
+	extends further in time. One way to avoid this is to pad one end of the
+	time series with zeroes. A clever method is to pad with enough zeroes
+	to make the length of the time series equal to a power of two, and
+	thereby speed up the FFT as well.
+	<P>
+	
+	<CENTER>
+		<H3>
+		-- <A HREF="montecarlo.html">on to Monte Carlo</A> --
+		</H3>
+	</CENTER>
+
+	<HR><!----------------------------------------------------------------->
+	<A HREF="./">back to Wavelet Home Page</A>
+
+
+
+</BODY>
+</HTML>

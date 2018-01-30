@@ -1,0 +1,133 @@
+<HTML>
+
+<HEAD>
+<TITLE>Wave:Monte Carlo</TITLE>
+<link rel="icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+</HEAD>
+	
+<BODY BGCOLOR="#FFFFFF">
+
+	<H1>Wavelet Analysis</H1>
+
+	<H2>
+	<UL>
+		<LI><A HREF="wavelet1.html">Introduction</A>
+		<LI><A HREF="wavelet2.html">Wavelets</A>
+		<LI><A HREF="wavelet3.html">Algorithms</A>
+		<LI><FONT COLOR="green">Monte Carlo</FONT>
+		<LI><A HREF="references.html">References</A>
+	</UL>
+	</H2>
+	
+	<HR><!----------------------------------------------------------------->
+
+	<P>
+	<H2>
+	Monte Carlo Method
+	</H2>
+	
+	<TABLE CELLPADDING=10><TR><TD>
+
+	<TABLE BORDER=1 CELLPADDING=10>
+	<TR><TD>
+	<FONT COLOR="red">Important Note:</FONT> When applying the significance
+	and confidence tests from
+	<A HREF="bams_abstract.html">"A Practical Guide to Wavelet Analysis"</A>,
+	you do <B>not</B> need to use a Monte Carlo simulation.
+	Analytical formulae are given in the paper for the statistical distribution
+	of wavelet power. These formulae are correct, assuming that
+	the underlying distribution of the original time series is Gaussian.
+	<P>
+	The following description of Monte Carlo is given for those who want
+	more background on the method, or if your time series cannot be assumed
+	to be Gaussian.
+	</TABLE>
+	
+	</TD><TD>
+	<FONT SIZE=2><B>Gaussian distribution</B></FONT><P>
+	<IMG SRC="images/gaussian.gif" WIDTH=174 HEIGHT=90 ALIGN=top ALT="Gaussian">
+	</TD></TR>
+	<TR><TD>
+	
+	&nbsp &nbsp &nbsp The Monte Carlo method (or simulation) was used
+	in <A HREF="bams_abstract.html">"A Practical Guide to Wavelet Analysis"</A>
+	to verify that the wavelet power spectrum was indeed chi-square distributed.
+	The method was also used to determine the empirical formulae for
+	time-averaging and scale-averaging (paper Sections 5a and 5b).
+	<P>
+	&nbsp &nbsp &nbsp The Monte Carlo method (or simulation) is a
+	statistical method for finding out the answer to a problem that is
+	too difficult to solve analytically,
+	or for verifying the analytical solution. It is called Monte Carlo because
+	of the gambling casinos in that city, and because the Monte
+	Carlo method is related to rolling dice.
+	<P>
+	
+	</TD><TD>
+	<FONT SIZE=2><B>Chi-square distribution</B></FONT><P>
+	<IMG SRC="images/chi_sqr.gif" WIDTH=174 HEIGHT=90 ALIGN=top ALT="Chi-square">
+	</TD></TR>
+	<TR><TD>
+	
+	&nbsp &nbsp &nbsp Here's an example:
+	<BLOCKQUOTE>If you roll two dice, then
+	the chances of getting a total of "two" (a "one" on each) are 1 in
+	36. This is easy to figure out. But if you didn't know the answer,
+	you could use the Monte Carlo method. You just roll two dice
+	thousands of times, and add up how many times you got a total of
+	"two". Eventually, your fraction of "two's" to "total rolls" will
+	approach 1/36.
+	</BLOCKQUOTE>
+	<P>
+	</TD><TD>
+	<IMG SRC="images/dice.gif" WIDTH=68 HEIGHT=77 ALIGN=top ALT="snake">
+	<IMG SRC="images/dice.gif" WIDTH=68 HEIGHT=77 ALIGN=middle ALT="eyes">
+	</TD>
+
+	<TR><TD>
+	&nbsp &nbsp &nbsp In our paper, we wanted to verify that the
+	statistical distribution for the wavelet power was chi-square.
+	Here's the Monte Carlo method we used:
+	<OL>
+	<LI>We created 100,000 random time series, each with 512 points.
+	<P>
+	<LI>Then we took the wavelet transform for each one,
+		and computed the wavelet power.
+	<P>
+	<LI>We then took a time slice from the middle (time <I>n</I>=256),
+	<P>
+	<LI>At each scale, we sorted all 100,000 wavelet powers into
+		increasing order.
+	<P>
+	<LI>You can then make a plot of wavelet power versus number.
+	<P>
+	<LI>If you then look at what the wavelet power was for
+		number 95,000 out of 100,000, then 95% of the wavelet power
+		is below that value, and only 5% is above.
+	<P>
+	<LI>This 95% level is the 95% confidence level
+		(or the 5% significance level).
+	</OL>
+	The method can be generalized to any process where
+	the statistical distribution is unknown, yet one needs to determine
+	confidence or significance levels.
+	<P>
+	</TD><TD VALIGN=top ALIGN=center>
+	<FONT SIZE=2><B>Time series</B></FONT><BR>
+	<IMG SRC="images/monte_time.gif" WIDTH=153 HEIGHT=58 ALT="time series">
+	<P>
+	<FONT SIZE=2><B>Wavelet power spectrum</B></FONT><BR>
+	<IMG SRC="images/monte_wave.gif" WIDTH=154 HEIGHT=75 ALT="wavelet power">
+	<P>
+	<FONT SIZE=2><B>Chi-square results</B></FONT><BR>
+	<IMG SRC="images/monte_chisqr.gif" WIDTH=187 HEIGHT=132 ALT="chi square">
+	<P>
+	</TD>
+	</TABLE>
+	<P>
+	<HR><!----------------------------------------------------------------->
+	<A HREF="./">back to Wavelet Home Page</A>
+
+</BODY>
+</HTML>

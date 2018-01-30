@@ -1,0 +1,129 @@
+<HTML>
+
+<HEAD>
+<TITLE>Wavelet analysis software</TITLE>
+<link rel="icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://atoc.colorado.edu/research/wavelets/favicon.ico" type="image/x-icon" />
+</HEAD>
+	
+<BODY BGCOLOR="#EEEEEE">
+<!-- BODY TEXT="#FFFFFF" LINK="#88BBFF" VLINK="#FF4444" ALINK="#0077FF" -->
+<CENTER>
+&#160;<BR>
+<FONT SIZE=6>Wavelet Software*</FONT><P>
+</CENTER>
+
+
+<CENTER>
+<TABLE CELLPADDING=30 BORDER=1>
+<TR VALIGN=top>
+<TD><FONT SIZE=5>Fortran</FONT><BR>
+	<A HREF="wave_fortran.zip">wave_fortran.zip</A><BR>
+	Includes all of the following files...<BR>
+	<A HREF="wave_fortran/wavetest_output.txt">Sample output</A><BR>
+	<A HREF="wave_fortran/wavetest.f">wavetest.f</A><BR>
+	<A HREF="wave_fortran/wavelet.f">wavelet.f</A><BR>
+	<A HREF="wave_fortran/cfftpack.f">cfftpack.f</A><BR>
+	<A HREF="wave_fortran/chisqr.f">chisqr.f</A><BR>
+	<A HREF="wave_fortran/sst_nino3.dat">sst_nino3.dat</A><BR>
+</TD>
+<TD><FONT SIZE=5>IDL</FONT><BR>
+	<A HREF="wave_idl.zip">wave_idl.zip</A><BR>
+	Includes all of the following files...<BR>
+	<A HREF="wave_idl/wavelet.pro">wavelet.pro</A><BR>
+	<A HREF="wave_idl/wave_signif.pro">wave_signif.pro</A><BR>
+	<A HREF="wave_idl/wavetest.pro">wavetest.pro</A><BR>
+	<A HREF="wave_idl/sst_nino3.dat">sst_nino3.dat</A><P>
+	Wavelet coherency:<BR>
+	<A HREF="wave_idl/wave_coherency.pro">wave_coherency.pro</A><BR>
+</TD>
+<TD><FONT SIZE=5>Matlab</FONT><BR>
+	<A HREF="wave_matlab.zip">wave_matlab.zip</A><BR>
+	Includes all of the following files...<BR>
+	<A HREF="wave_matlab/wavelet.m">wavelet.m</A><BR>
+	<A HREF="wave_matlab/wave_bases.m">wave_bases.m</A><BR>
+	<A HREF="wave_matlab/wave_signif.m">wave_signif.m</A><BR>
+	<A HREF="wave_matlab/chisquare_inv.m">chisquare_inv.m</A><BR>
+	<A HREF="wave_matlab/chisquare_solve.m">chisquare_solve.m</A><BR>
+	<A HREF="wave_matlab/wavetest.m">wavetest.m</A><BR>
+	<A HREF="wave_matlab/sst_nino3.dat">sst_nino3.dat</A><BR>
+</TD>
+<TD><FONT SIZE=5>Python**</FONT><BR>
+	<A HREF="wave_python/waveletAnalysis.py">waveletAnalysis.py</A><BR>
+        <A HREF="wave_python/waveletFunctions.py">waveletFunctions.py</A><BR>
+	<A HREF="wave_python/sst_nino3.dat">sst_nino3.dat</A><BR>
+	<A HREF="wave_python/README_python.txt">README_python.txt</A><BR>
+
+** <FONT SIZE=2>Wavelet analysis codes<BR>
+translated to Python and provided<BR>
+here courtesy of<BR>
+Evgeniya Predybaylo<BR>
+predybaylo[DOT]evgenia[AT]gmail[DOT]com<BR>
+Earth Sciences and Engineering Program<BR>
+King Abdullah University<BR>
+ of Science and Technology<BR>
+Kingdom of Saudi Arabia<BR>
+<BR>
+Please include the following<BR>
+acknowledgement in any publication<BR>
+"Python wavelet software provided by<BR>
+Evgeniya Predybaylo based on<BR>
+Torrence and Compo (1998)<BR>
+and is available at URL: <BR>
+http://atoc.colorado.edu/research/wavelets/"<BR>
+
+</TD>
+<TR VALIGN=top>
+<TD COLSPAN=4><FONT SIZE=5>Datasets</FONT><BR>
+<UL><LI>NINO3 sea surface temperature 1871-1996
+	(in &deg;C; from the UKMO GISST2.3):<BR>
+	<A HREF="wave_idl/nino3sst.txt">Seasonally-averaged,
+	minus the annual cycle</A><BR>
+	<A HREF="nino3data.asc">Monthly-averaged, raw data and anomalies</A>
+    </LI>
+    <LI><A HREF="wave_idl/soi.txt">Southern Oscillation Index</A></LI>
+    <LI><A HREF="wave_idl/monsoon.txt">All-India Monsoon Rainfall</A></LI>
+    <LI><A HREF="wave_idl/mauna.txt">Mauna Loa CO<SUB>2</SUB></A></LI>
+    <LI><A HREF="wave_idl/sunspot.txt">Wolf Sunspot Number</A></LI>
+</UL>
+</TD>
+</TABLE>
+</CENTER>
+
+&#160;<P>
+
+<BLOCKQUOTE>
+<CENTER>
+* <FONT SIZE=2>Notice: Please acknowledge the use of this software in any publications:<BR>
+<B>
+``Wavelet software was provided by C. Torrence and G. Compo, and is available at
+URL:&#160;http://atoc.colorado.edu/research/wavelets/''.
+</B><BR>
+Please send a copy of such publications to either C. Torrence or G. Compo:
+</FONT>
+<CENTER>
+<TABLE>
+<TR><TD><FONT SIZE=2>
+    Dr. Christopher Torrence<BR>
+    Exelis<BR>
+    4990 Pearl East Circle<BR>
+    Boulder, CO 80301, USA<BR>
+    E-mail: chris.torrence[AT]exelisinc[DOT]com
+</FONT>
+	</TD><TD>&#160; &#160; &#160; &#160;</TD>
+	<TD><FONT SIZE=2>
+	Dr. Gilbert P. Compo<BR>
+	CIRES, University of Colorado & Physical Sciences Division, NOAA ESRL<BR>
+	Campus Box 216<BR>
+	University of Colorado<BR>
+	Boulder CO 80309-0216, USA.<BR>
+	E-mail: compo[AT]colorado[DOT]edu
+</FONT>
+</TABLE>
+</CENTER>
+<HR><!----------------------------------------------------------------->
+<A HREF="./">back to Wavelet Home Page</A>
+
+</BLOCKQUOTE>
+</BODY>
+</HTML>
