@@ -2,6 +2,8 @@
 
 Original website: http://atoc.colorado.edu/research/wavelets/
 
+**Note:** To rebuild the website, be sure to bundle up the `wave_fortran`, `wave_idl`, and `wave_matlab` folders into zip files at the top level.
+
 # Papers
 
 ### [Torrence & Compo 1998](bams_79_01_0061.pdf)
