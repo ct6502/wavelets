@@ -119,12 +119,14 @@ FUNCTION wave_signif,y,dt,scale,sigtest, $   ;*** required inputs
 	FFT_THEOR=fft_theor,PERIOD=period, $   ;*** optional outputs
 	SAVG=Savg,SMID=Smid,CDELTA=CDelta,PSI0=psi0   ;*** optional outputs
 	
+	compile_opt idl2
+
 	ON_ERROR,2
 	IF (N_ELEMENTS(y) LT 1) THEN MESSAGE,'Time series Y must be input'
 	IF (N_ELEMENTS(dt) LT 1) THEN MESSAGE,'DT must be input'
 	IF (N_ELEMENTS(scale) LT 1) THEN MESSAGE,'Scales must be input'
 	IF (N_PARAMS() LT 4) THEN sigtest = 0   ; the default
-	IF (N_ELEMENTS(y) EQ 1) THEN variance=y ELSE variance=(MOMENT(y))(1)
+	variance = N_ELEMENTS(y) eq 1 ? y : (MOMENT(y))[1]
 	
 ;....check keywords & optional inputs
 	IF (N_ELEMENTS(mother) LT 1) THEN mother = 'MORLET'
@@ -133,39 +135,39 @@ FUNCTION wave_signif,y,dt,scale,sigtest, $   ;*** required inputs
 	IF (N_ELEMENTS(lag1) LT 1) THEN lag1 = 0.0
 	confidence = KEYWORD_SET(confidence)
 	
-	lag1 = lag1(0)
+	lag1 = lag1[0]
 	
 	J = N_ELEMENTS(scale) - 1
 	s0 = MIN(scale)
-	dj = ALOG(scale(1)/scale(0))/ALOG(2)
+	dj = ALOG(scale[1]/scale[0])/ALOG(2)
 	
 	CASE (STRUPCASE(mother)) OF
 	'MORLET': BEGIN
 			IF (param EQ -1) THEN k0=6d ELSE k0=param
 			fourier_factor = (4*!PI)/(k0 + SQRT(2+k0^2)) ; [Sec.3h]
 			empir = [2.,-1,-1,-1]
-			IF (k0 EQ 6) THEN empir(1:3)=[0.776,2.32,0.60]
+			IF (k0 EQ 6) THEN empir[1:3]=[0.776,2.32,0.60]
 		END
 	'PAUL': BEGIN ;****************** PAUL
 			IF (param EQ -1) THEN m=4d ELSE m=param
 			fourier_factor = 4*!PI/(2*m+1)
 			empir = [2.,-1,-1,-1]
-			IF (m EQ 4) THEN empir(1:3)=[1.132,1.17,1.5]
+			IF (m EQ 4) THEN empir[1:3]=[1.132,1.17,1.5]
 		END
 	'DOG': BEGIN ;******************* DOG
 			IF (param EQ -1) THEN m=2 ELSE m=param
 			fourier_factor = 2*!PI*SQRT(2./(2*m+1))
 			empir = [1.,-1,-1,-1]
-			IF (m EQ 2) THEN empir(1:3) = [3.541,1.43,1.4]
-			IF (m EQ 6) THEN empir(1:3) = [1.966,1.37,0.97]
+			IF (m EQ 2) THEN empir[1:3] = [3.541,1.43,1.4]
+			IF (m EQ 6) THEN empir[1:3] = [1.966,1.37,0.97]
 		END
 	ENDCASE
 	
 	period = scale*fourier_factor
-	dofmin = empir(0) ; Degrees of freedom with no smoothing
-	Cdelta = empir(1) ; reconstruction factor
-	gamma = empir(2)  ; time-decorrelation factor
-	dj0 = empir(3)    ; scale-decorrelation factor
+	dofmin = empir[0] ; Degrees of freedom with no smoothing
+	Cdelta = empir[1] ; reconstruction factor
+	gamma = empir[2]  ; time-decorrelation factor
+	dj0 = empir[3]    ; scale-decorrelation factor
 
 ;....significance levels [Sec.4]
 	freq = dt/period  ; normalized frequency
@@ -197,8 +199,9 @@ FUNCTION wave_signif,y,dt,scale,sigtest, $   ;*** required inputs
 		dof = dof > dofmin   ; minimum DOF is dofmin
 		IF (NOT confidence) THEN BEGIN
 			FOR a1=0,J DO BEGIN
-				chisqr = CHISQR_CVF(1. - siglvl,dof(a1))/dof(a1)
-				signif(a1) = fft_theor(a1)*chisqr
+				chisqr = CHISQR_CVF(1. - siglvl,dof[a1])/dof[a1]
+				signif[a1] = fft_theor[a1]*chisqr
+;	            print,"a1=",a1,"dof=",dof[a1],"chisquare=", chisqr
 			ENDFOR
 		ENDIF ELSE BEGIN
 			signif = FLTARR(J+1,2)
@@ -206,7 +209,7 @@ FUNCTION wave_signif,y,dt,scale,sigtest, $   ;*** required inputs
 			FOR a1=0,J DO BEGIN
 				chisqr = dof(a1)/ $
 					[CHISQR_CVF(sig,dof(a1)),CHISQR_CVF(1.-sig,dof(a1))]
-				signif(a1,*) = fft_theor(a1)*chisqr
+				signif[a1,*] = fft_theor[a1]*chisqr
 			ENDFOR
 		ENDELSE
 		END
@@ -217,17 +220,17 @@ FUNCTION wave_signif,y,dt,scale,sigtest, $   ;*** required inputs
 		IF (Cdelta EQ -1) THEN MESSAGE, $
 			'Cdelta & dj0 not defined for '+mother+ $
 			' with param='+STRTRIM(param,2)
-		s1 = dof(0)
-		s2 = dof(1)
+		s1 = dof[0]
+		s2 = dof[1]
 		avg = WHERE((scale GE s1) AND (scale LE s2),navg)
 		IF (navg LT 1) THEN MESSAGE,'No valid scales between ' + $
 			STRTRIM(s1,2) + ' and ' + STRTRIM(s2,2)
-		s1 = MIN(scale(avg))
-		s2 = MAX(scale(avg))
-		Savg = 1./TOTAL(1./scale(avg))       ; [Eqn(25)]
+		s1 = MIN(scale[avg])
+		s2 = MAX(scale[avg])
+		Savg = 1./TOTAL(1./scale[avg])       ; [Eqn(25)]
 		Smid = EXP((ALOG(s1)+ALOG(s2))/2.)   ; power-of-two midpoint
 		dof = (dofmin*navg*Savg/Smid)*SQRT(1 + (navg*dj/dj0)^2)  ; [Eqn(28)]
-		fft_theor = Savg*TOTAL(fft_theor(avg)/scale(avg))  ; [Eqn(27)]
+		fft_theor = Savg*TOTAL(fft_theor[avg]/scale[avg])  ; [Eqn(27)]
 		chisqr = CHISQR_CVF(1. - siglvl,dof)/dof
 		IF confidence THEN BEGIN
 			sig = (1. - siglvl)/2.
