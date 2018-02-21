@@ -1,8 +1,6 @@
 # Torrence &amp; Compo Wavelet Analysis Software
 
-Original website: http://atoc.colorado.edu/research/wavelets/
-
-**Note:** To rebuild the website, be sure to bundle up the `wave_fortran`, `wave_idl`, and `wave_matlab` folders into zip files at the top level.
+http://atoc.colorado.edu/research/wavelets/
 
 # Papers
 
