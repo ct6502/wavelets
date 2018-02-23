@@ -1,0 +1,4 @@
+#!/bin/sh -f
+gcc -c util.c
+gcc -c waveplot.c
+gcc waveplot.c util.o -o waveplot.cgi
