@@ -2,7 +2,7 @@
 ;+
 ; NAME:   WAVETEST
 ;
-; PURPOSE:   Example IDL program for WAVELET, using NINO3 SST dataset
+; PURPOSE:   Example IDL program for WAVELET, using ENSO SST dataset
 ;
 ; EXECUTION:
 ; 
@@ -17,19 +17,44 @@
 
   compile_opt idl2
 
-  n = 504
-  sst = FLTARR(n)
-  OPENR,1,'sst_nino3.dat'   ; input SST time series
-  READF,1,sst
-  CLOSE,1
+  if (0) then begin  ; original dataset
+    n = 504
+    sst = FLTARR(n)
+    OPENR,1,'sst_nino3.dat'   ; input SST time series
+    READF,1,sst
+    CLOSE,1
+    dt = 0.25
+    dtName = 'seasonal'
+    years = [1871, 1996]
+    contourLevels = [0.5,1,2,4]
+    dataset = 'NINO3'
+  endif else begin
+    years = intarr(2)
+    openr, 1, 'nino34.long.data'
+    readf, 1, years
+    data = fltarr(13, years[1] - years[0] + 1)
+    readf, 1, data
+    close, 1
+    data = data[1:12,*]
+    fullYears = total(data gt 0, 1) eq 12
+    data = data[*, where(fullYears, nyears)]
+    years[1] = years[0] + nyears - 1
+    annualCycle = total(data, 2)/nyears
+    sst = data - rebin(annualCycle, 12, nyears)
+    sst = sst[*]
+    dt = 1d/12
+    dtName = 'monthly'
+    n = n_elements(sst)
+    contourLevels = [1, 2, 4, 8]
+    dataset = 'NINO3.4'
+  endelse
 
 ;------------------------------------------------------ Computation
 
   sst = sst - MEAN(sst)
 
-  dt = 0.25
-  time = FINDGEN(n)*dt + 1871.0  ; construct time array
-  xrange = [1870,2000]  ; plotting range
+  time = FINDGEN(n)*dt + years[0]  ; construct time array
+  xrange = [years[0]/10*10,(years[1] + 9)/10*10]  ; plotting range
   pad = 1
   s0 = dt    ; this says start at a scale of 3 months
   dj = 0.25  ; this will do 4 sub-octaves per octave
@@ -96,9 +121,9 @@
 ;--- Plot time series
   pos1 = [0.1,0.75,0.7,0.95]
   p = PLOT(time, sst, '2', XRANGE=xrange, /CURRENT, $
-    XTITLE='Time (year)',YTITLE='NINO3 SST (!Uo!NC)', $
-    TITLE='a) NINO3 Sea Surface Temperature (seasonal)', $
-    LAYOUT=[1,3,1], MARGIN=[0.1,0.15,0.3,0.15])
+    XTITLE='Time (year)',YTITLE=dataset + ' SST (!Uo!NC)', $
+    TITLE='a) ' + dataset + ' Sea Surface Temperature (' + dtName + ')', $
+    LAYOUT=[1,3,1], MARGIN=[0.1,0.15,0.3,0.15], YMINOR=1)
   IF (N_ELEMENTS(recon_sst) GT 1) THEN begin
 ;    p = PLOT(time,recon_sst,COLOR='red', /OVERPLOT)
   endif
@@ -109,7 +134,6 @@
 
 ;--- Contour plot wavelet power spectrum
   yrange = [64,0.5]   ; years
-  levels = [0.5,1,2,4]
   colors = [80,120,160,200]
   colors = ['bisque','orange','orange_red','dark_red']
   c_colors = (OrderedHash(!color))[colors.ToUpper()]
@@ -119,13 +143,15 @@
   ytickv = ytickv[WHERE(ytickv ge MIN(yrange) and ytickv le MAX(yrange))]
   pos2 = [pos1[0],0.35,pos1[2],0.65]
 
+  cLabel = STRING(contourLevels, format='(10(g0,:,","))')
+
   c = CONTOUR(power,time,period, /CURRENT, $
     LAYOUT=[1,3,2], MARGIN=[0.1,0.15,0.3,0.15], $
     AXIS_STYLE=1, XRANGE=xrange,YRANGE=yrange, /YLOG, $
     YTICKV=ytickv, YMINOR=0, $
-    C_VALUE=levels,C_COLOR=c_colors,/FILL, $
+    C_VALUE=contourLevels,C_COLOR=c_colors,/FILL, $
     XTITLE='Time (year)',YTITLE='Period (years)', $
-    TITLE='b) Wavelet Power Spectrum (contours at 0.5,1,2,4!Uo!NC!U2!N)')
+    TITLE='b) Wavelet Power Spectrum (contours at ' + cLabel + '!Uo!NC!U2!N)')
 
 ; significance contour
   c = CONTOUR(signif,time,period,/OVERPLOT,C_VALUE=1,C_THICK=2, $
@@ -145,7 +171,7 @@
   blank = REPLICATE(' ',29)
   p = PLOT(global_ws,period, /CURRENT, $
     LAYOUT=[2,3,4], MARGIN=[0.49,0.15,0.1,0.15], $
-    AXIS_STYLE=1, XRANGE=[0,4], YRANGE=yrange, /YLOG, $
+    AXIS_STYLE=1, XRANGE=[0,MAX(global_ws)], YRANGE=yrange, /YLOG, $
     YTICKV=ytickv, YTICKNAME=blank, YMINOR=0, YTICKLEN=0.08, $
     XTITLE='Power (!Uo!NC!U2!N)',TITLE='c) Global Wavelet Spectrum')
   p = PLOT(global_signif,period,'--', /OVERPLOT)
