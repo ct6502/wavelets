@@ -1,0 +1,220 @@
+<HTML>
+<HEAD>
+<TITLE>Wave:Interactive Wavelets:Plot</TITLE>
+</HEAD>
+
+<BODY>
+<CENTER>
+
+<TABLE BORDER=5 CELLPADDING=5 BGCOLOR="#FFFF99">
+<TR><TD WIDTH=600 VALIGN=top>
+
+# str0 = '<IMG SRC="/research/wavelets/plot/'
+# alt = 'Time Series and Wavelet Power Spectrum.'
+# str1 = str0+filename+time_str+'.gif" WIDTH=600 HEIGHT=400 ALT="'+alt+'">'
+# str2 = '&#160;<P><CENTER><H1><A HREF="/research/wavelets/plot/'
+# str2 = str2+filename+time_str+'.ps">click here for postscript file</A></H1></CENTER><P>'
+# IF (N_ELEMENTS(errors) GT 1) THEN FOR i=0,N_ELEMENTS(errors)-1 DO PRINTF,outf,errors(i)
+# IF (N_ELEMENTS(errors) LE 1) THEN IF (postscript) THEN PRINTF,outf,str2 ELSE PRINTF,outf,str1
+<BR CLEAR=all>
+# IF (N_ELEMENTS(errors) GT 1) THEN PRINTF,outf,'<HR WIDTH=400><!--' ;comment out the caption-->
+
+Fig. 1: (a)
+# str1 = '.'
+# IF (source NE '') THEN str1 = ' (from ' + source + ')' + str1
+# PRINTF,outf,'<A HREF="/research/wavelets/plot/'+link+'">Time series'
+# PRINTF,outf,'</A> of ' + dataset1 + str1
+
+
+(b) The wavelet power spectrum.
+
+# str1 = 'The power has been scaled by the global wavelet spectrum (at right).'
+# str2 = 'The contour levels are chosen so that 75%, 50%, 25%, and 5% of the wavelet power is above each level, respectively.
+# IF (gws) THEN PRINTF,outf,str1 ELSE PRINTF,outf,str2
+
+# str1 = 'Cross-hatched region is the cone of influence, where zero padding has reduced the variance.'
+# IF (coi1) THEN PRINTF,outf,str1
+
+# background_str = 'using a white-noise background spectrum'
+# lag1_string = ' lag1=' + ROUND_ANY(lag1)
+# IF (lag1 GT 0.0) THEN background_str = 'using a red-noise (autoregressive' + lag1_string + ') background spectrum'
+# background_str = [background_str,'using the global wavelet spectrum as the background']
+
+# str1 = 'Black contour is the '+ROUND_ANY(siglvl)+'% significance level, '
+# IF (siglvl NE 0) THEN PRINTF,outf,str1+background_str[do_global]+'.'
+
+# str1 = '(c) The global wavelet power spectrum
+# str2 = ' (black line). The dashed line is the '+ROUND_ANY(siglvl)+'% significance level for the global wavelet spectrum, '
+# str2 = str2 + background_str[0]
+# IF ((siglvl NE 0) AND (N_ELEMENTS(globalsignif) GT 1)) THEN str1 = str1 + str2
+# PRINTF,outf,str1+'.'
+
+# IF (N_ELEMENTS(errors) GT 1) THEN PRINTF,outf,'-->' ;comment out the caption
+
+</TABLE>
+
+<!---------------------------------------------------------------------->
+<FORM METHOD="POST" ACTION="/cgi-bin/waveplot.cgi">
+
+<TABLE BORDER=5 CELLPADDING=5 BGCOLOR="#CFFFFF">
+<TR><TD VALIGN=top>
+
+<H2>Wavelet Options:</H2>
+# select = (['',' SELECTED'])
+# morlet = (mother EQ "Morlet")
+# paul = (mother EQ "Paul")
+# dog = (mother EQ "DOG")
+<B>Wavelet: </B>
+<SELECT NAME="$mother" SIZE=1>
+# PRINTF,outf,'<OPTION VALUE="Morlet"' + select(morlet) + '> Morlet'
+# PRINTF,outf,'<OPTION VALUE="Paul"' + select(paul) + '> Paul'
+# PRINTF,outf,'<OPTION VALUE="DOG"' + select(dog) + '> DOG'
+</SELECT>
+# PRINTF,outf,'<INPUT TYPE="hidden" NAME="$mother_old" VALUE="'+mother+'">'
+
+<B>Param: </B>
+# str1 = '<INPUT TYPE="text" NAME="param" VALUE="'
+# PRINTF,outf,str1 + param_str + '" SIZE=6 MAXLENGTH=6>'
+<BR>
+
+<B>s<SUB>0</SUB>/dt</B> =
+# str1 = '<INPUT TYPE="text" NAME="s0" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(s0) + '" SIZE=6 MAXLENGTH=6>'
+Starting scale, multiple of <B>dt</B>
+<BR>
+
+<B>&#160;&#160;&#160;&#160;dj</B> =
+# str1 = '<INPUT TYPE="text" NAME="dj" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(dj) + '" SIZE=6 MAXLENGTH=6>'
+delta-j, scale width
+<BR>
+
+<B>&#160;&#160;Oct</B> =
+# str1 = '<INPUT TYPE="text" NAME="oct" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(oct) + '" SIZE=3 MAXLENGTH=3>'
+ #octaves, max scale is <B>s<SUB>0</SUB> 2<SUP>Oct</SUP></B>
+<BR>
+
+# str1 = '<INPUT TYPE="checkbox" NAME="pad" VALUE="1" '
+# PRINTF,outf,str1 + (['','CHECKED'])(pad) + '>'
+<B>&#160;Pad with zeroes</B>
+<BR>
+
+# str1 = '<INPUT TYPE="checkbox" NAME="gws" VALUE="1" '
+# PRINTF,outf,str1 + (['','CHECKED'])(gws) + '>'
+<B>&#160;Normalize by global wavelet</B>
+<BR>
+
+<B>Significance level</B> =
+# str1 = '<INPUT TYPE="text" NAME="siglvl" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(siglvl) + '" SIZE=4 MAXLENGTH=6>'
+%  (0=don't plot)
+<P>
+
+<B>Background spectrum for significance:</B><BR>
+# str1 = '&#160;<INPUT TYPE="radio" NAME="do_global" VALUE="1"
+# PRINTF,outf,str1 + (['','CHECKED'])[do_global] + '>'
+&#160;Global wavelet spectrum, or<BR>
+# str1 = '&#160;<INPUT TYPE="radio" NAME="do_global" VALUE="0"
+# PRINTF,outf,str1 + (['CHECKED',''])[do_global] + '>'
+&#160;Red noise (lag1 autoregressive)
+<P>
+
+<B>Lag1</B><SUP>*</SUP> =
+# str1 = '<INPUT TYPE="text" NAME="lag1" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(lag1) + '" SIZE=6 MAXLENGTH=6>'
+(white noise=0.0)
+<P>
+
+<!---------------------------------------------------------------------->
+<TD>
+
+<H2>Plotting Options:</H2>
+
+# str1 = '<INPUT TYPE="radio" NAME="printflag" VALUE="0" '
+# PRINTF,outf,str1 + (['','CHECKED'])(printflag EQ 0) + '>'
+<FONT SIZE=4>Screen</FONT>
+<BR>
+# str1 = '<INPUT TYPE="radio" NAME="printflag" VALUE="1" '
+# PRINTF,outf,str1 + (['','CHECKED'])(printflag EQ 1) + '>'
+<FONT SIZE=4>Postscript file</FONT>
+<BR>
+# str1 = '<INPUT TYPE="radio" NAME="printflag" VALUE="2" '
+# PRINTF,outf,str1 + (['','CHECKED'])(printflag EQ 2) + '>'
+<FONT SIZE=4>Encapsulated postscript file</FONT>
+
+<P>
+
+#; PRINTF,outf,'<B>t<SUB>0</SUB></B>=' + ROUND_ANY(t0) + ','
+#; PRINTF,outf,'<B>dt</B>=' + ROUND_ANY(dt) + '<BR>'
+<B>From</B>
+# str1 = '<INPUT TYPE="text" NAME="tstart" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(tstart) + '" SIZE=12 MAXLENGTH=12>'
+<B>until</B>
+# str1 = '<INPUT TYPE="text" NAME="tend" VALUE="'
+# PRINTF,outf,str1 + ROUND_ANY(tend) + '" SIZE=12 MAXLENGTH=12>'
+<BR>
+# PRINTF,outf,'Range = ' + ROUND_ANY(time0) + ' - ' + ROUND_ANY(time1)
+<BR>
+
+# str1 = '<INPUT TYPE="checkbox" NAME="COI" VALUE="1" '
+# PRINTF,outf,str1 + (['','CHECKED'])(coi1) + '>'
+<B>&#160;Cone of influence</B>
+<BR>
+
+# str1 = '<INPUT TYPE="checkbox" NAME="do_color" VALUE="0" '
+# PRINTF,outf,str1 + (['CHECKED',''])(do_color) + '>'
+<B>&#160;Black & white</B>
+<BR>
+
+<B>x-label</B>:
+# str1 = '<INPUT TYPE="text" NAME="$xtitle" VALUE="'
+# PRINTF,outf,str1 + xtitle + '" SIZE=15 MAXLENGTH=80>'
+<BR>
+
+<B>y-label</B>:
+# str1 = '<INPUT TYPE="text" NAME="$ytitle" VALUE="'
+# PRINTF,outf,str1 + ytitle + '" SIZE=15 MAXLENGTH=80>'
+# PRINTF,outf,'<INPUT TYPE="hidden" VALUE="' + SYSTIME() + '">'
+<BR>
+
+<B>Long name</B>:
+# str1 = '<INPUT TYPE="text" NAME="$title" VALUE="'
+# PRINTF,outf,str1 + title + '" SIZE=30 MAXLENGTH=80>'
+<BR>
+
+<B>Short name</B>:
+# str1 = '<INPUT TYPE="text" NAME="$dataset1" VALUE="'
+# PRINTF,outf,str1 + dataset1 + '" SIZE=30 MAXLENGTH=80>'
+<BR>
+
+<B>Data units</B>:
+# str1 = '<INPUT TYPE="text" NAME="$units" VALUE="'
+# PRINTF,outf,str1 + units + '" SIZE=15 MAXLENGTH=80>'
+<BR>
+
+<B>Time units</B>:
+# str1 = '<INPUT TYPE="text" NAME="$t_units" VALUE="'
+# PRINTF,outf,str1 + t_units + '" SIZE=15 MAXLENGTH=80>'
+
+<P>
+
+<!---------------------------------------------------------------------->
+<TR><TD COLSPAN=2 VALIGN=top>
+
+<CENTER>
+&#160;<BR>
+<INPUT TYPE="reset" VALUE=" RESET ">&#160;&#160;
+&#160;<INPUT TYPE="submit" NAME="$submit" VALUE=" SUBMIT ">
+</FORM>
+</CENTER>
+</TABLE>
+<SUP>*</SUP>The initial <B>Lag1</B> is estimated from
+(a<SUB>1</SUB>&#160;+&#160;a<SUB>2</SUB><SUP>1/2</SUP>)/2, where a<SUB>1</SUB> and a<SUB>2</SUB>
+are the lag1 and lag2 autocorrelations.
+<P>
+<A HREF="/research/wavelets/">[return to Wavelet Analysis homepage]</A>
+<P>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,98 @@
+
+<HTML>
+<HEAD>
+<TITLE>Wave:Interactive Wavelets:Choose data</TITLE>
+</HEAD>
+<BODY>
+
+<FORM METHOD="POST" ACTION="/cgi-bin/waveplot.cgi">
+
+<!--Keywords: Wavelet analysis;significance levels;confidence intervals;
+	red noise power spectrum-->
+<CENTER>
+<TABLE CELLPADDING=10 BORDER=5>
+<!-- BGCOLOR="#CFFFFF" -->
+<TR><TD COLSPAN=2 ALIGN=center>
+
+<TABLE><TR><TD ALIGN=center>
+<FONT SIZE=6>Interactive Wavelets</FONT><BR>
+<FONT SIZE=2>Please send comments or suggestions to
+C.Torrence: torrence@NOSPAMmonsoon.colorado.edu
+</FONT>
+</TD><TD ALIGN=center>
+<FONT SIZE=4>
+&#160;&#160;&#160;&#160;&#160;
+<INPUT TYPE="reset" VALUE=" Reset "> &#160; or &#160;
+<INPUT TYPE="submit" NAME="$submit" VALUE=" Submit ">
+&#160;&#160;&#160;&#160;&#160;
+</FONT>
+</TABLE>
+
+</TR>
+<TR>
+<TD VALIGN=top>
+
+<FONT SIZE=4>Choose a dataset and press "Submit": </FONT><P>
+<SELECT NAME="$dataset" SIZE=5>
+<OPTION VALUE="nino3sst" SELECTED> &#160; NINO3 Sea Surface Temperature &#160;
+<OPTION VALUE="soi"> &#160; Southern Oscillation Index
+<OPTION VALUE="monsoon"> &#160; All-India Monsoon Rainfall
+<OPTION VALUE="sunspot"> &#160; Wolf's Sunspot Number
+<OPTION VALUE="mauna"> &#160; Mauna Loa Carbon Dioxide
+</SELECT>
+
+<P>
+<CENTER>
+<IMG SRC="nino3sst.gif" WIDTH=200 HEIGHT=200>
+</CENTER>
+
+</TD><TD VALIGN=top>
+
+<FONT SIZE=4>Or enter new data: </FONT>
+
+<TABLE CELLPADDING=0>
+<TR><TD ALIGN=right><B>Long name:</B>
+</TD><TD>
+<INPUT TYPE="text" NAME="$title" VALUE="Time Series" SIZE=30 MAXLENGTH=80>
+<BR>
+<TR><TD ALIGN=right><B>Data source:</B>
+</TD><TD>
+<INPUT TYPE="text" NAME="$source" VALUE="" SIZE=30 MAXLENGTH=255>
+<BR>
+<TR><TD ALIGN=right><B>Short name:</B>
+</TD><TD>
+<INPUT TYPE="text" NAME="$dataset1" VALUE="Data" SIZE=12 MAXLENGTH=12>
+<BR>
+<TR><TD ALIGN=right><B>Data units:</B>
+</TD><TD>
+<INPUT TYPE="text" NAME="$units" VALUE="" SIZE=12 MAXLENGTH=12>
+<BR>
+<TR><TD ALIGN=right>Initial time <B>t<SUB>0</SUB></B> =
+</TD><TD>
+<INPUT TYPE="text" NAME="t0" VALUE="0.0" SIZE=12 MAXLENGTH=12>
+<BR>
+<TR><TD ALIGN=right>time between data values <B>dt</B> =
+</TD><TD>
+<INPUT TYPE="text" NAME="dt" VALUE="1.0" SIZE=12 MAXLENGTH=12>
+<BR>
+<TR><TD ALIGN=right><B>Time units</B>:
+</TD><TD>
+<INPUT TYPE="text" NAME="$t_units" VALUE="years" SIZE=12 MAXLENGTH=40>
+<TR><TD ALIGN=right><B>Data Values</B>:
+<P>
+Data values should be separated by spaces<BR> or returns,
+maximum of 2048 values.
+<P>
+If this field is left empty, then the default dataset (to the left)
+will be used.
+</TD><TD><TEXTAREA ROWS=10 COLS=30 NAME="data"></TEXTAREA>
+</TABLE>
+
+
+</TABLE>
+
+</CENTER>
+</FORM>
+
+</BODY>
+</HTML>

@@ -1,0 +1,4 @@
+.compile waveplot
+RESOLVE_ALL
+SAVE,FILENAME='waveplot.sav',/ROUTINES,/VERBOSE
+EXIT
