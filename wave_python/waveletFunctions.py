@@ -6,8 +6,8 @@ __author__ = 'Evgeniya Predybaylo, Michael von Papen'
 
 # Copyright (C) 1995-2004, Christopher Torrence and Gilbert P.Compo
 # Python version of the code is written by Evgeniya Predybaylo in 2014
-# edited by Michael von Papen (FZ Juelich, INM-6), 2018, to include 
-# analysis at arbitrary frequencies 
+# edited by Michael von Papen (FZ Juelich, INM-6), 2018, to include
+# analysis at arbitrary frequencies
 #
 #   This software may be used, copied, or redistributed as long as it is not
 #   sold and this copyright notice is reproduced on each copy made. This
@@ -138,22 +138,24 @@ def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1, freq=None):
         fourier_factor = 2 * np.pi * np.sqrt(2. / (2 * param + 1))
     else:
         fourier_factor = np.nan
-        
+
     if freq is None:
         j = np.arange(0, J1+1)
         scale = s0 * 2. ** (j * dj)
     else:
-        scale  = 1./(fourier_factor*freq)
+        scale = 1./(fourier_factor*freq)
         period = 1./freq
     wave = np.zeros(shape=(len(scale), n), dtype=complex)  # define the wavelet array
 
     # loop through all scales and compute transform
     for a1 in range(0, len(scale)):
-        daughter, fourier_factor, coi, dofmin = wave_bases(mother, k, scale[a1], param)
+        daughter, fourier_factor, coi, _ = wave_bases(mother, k, scale[a1], param)
         wave[a1, :] = np.fft.ifft(f * daughter)  # wavelet transform[Eqn(4)]
 
-    coi = coi * dt * np.concatenate((np.insert(np.arange((n1 + 1) / 2 - 1), [0], [1E-5]),
-									 np.insert(np.flipud(np.arange(0, n1 / 2 - 1)), [-1], [1E-5])))  # COI [Sec.3g]
+    # COI [Sec.3g]
+    coi = coi * dt * np.concatenate((
+        np.insert(np.arange((n1 + 1) / 2 - 1), [0], [1E-5]),
+        np.insert(np.flipud(np.arange(0, n1 / 2 - 1)), [-1], [1E-5])))
     wave = wave[:, :n1]  # get rid of padding before returning
 
     return wave, period, scale, coi
