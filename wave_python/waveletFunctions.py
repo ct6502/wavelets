@@ -1,11 +1,13 @@
 from scipy.special._ufuncs import gammainc, gamma
 import numpy as np
 from scipy.optimize import fminbound
-__author__ = 'Evgeniya Predybaylo'
+__author__ = 'Evgeniya Predybaylo, Michael von Papen'
 
 
 # Copyright (C) 1995-2004, Christopher Torrence and Gilbert P.Compo
 # Python version of the code is written by Evgeniya Predybaylo in 2014
+# edited by Michael von Papen (FZ Juelich, INM-6), 2018, to include
+# analysis at arbitrary frequencies
 #
 #   This software may be used, copied, or redistributed as long as it is not
 #   sold and this copyright notice is reproduced on each copy made. This
@@ -92,7 +94,7 @@ __author__ = 'Evgeniya Predybaylo'
 #        at that particular time.
 #        Periods greater than this are subject to edge effects.
 
-def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1):
+def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1, freq=None):
     n1 = len(Y)
 
     if s0 == -1:
@@ -122,21 +124,42 @@ def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1):
     f = np.fft.fft(x)  # [Eqn(3)]
 
     #....construct SCALE array & empty PERIOD & WAVE arrays
-    j = np.arange(0, J1+1)
-    scale = s0 * 2. ** (j * dj)
-    wave = np.zeros(shape=(int(J1 + 1), n), dtype=complex)  # define the wavelet array
+    if mother.upper() == 'MORLET':
+        if param == -1:
+            param = 6.
+        fourier_factor = 4 * np.pi / (param + np.sqrt(2 + param**2))
+    elif mother.upper == 'PAUL':
+        if param == -1:
+            param = 4.
+        fourier_factor = 4 * np.pi / (2*param+1)
+    elif mother.upper == 'DOG':
+        if param == -1:
+            param = 2.
+        fourier_factor = 2 * np.pi * np.sqrt(2. / (2 * param + 1))
+    else:
+        fourier_factor = np.nan
+
+    if freq is None:
+        j = np.arange(0, J1+1)
+        scale = s0 * 2. ** (j * dj)
+    else:
+        scale = 1./(fourier_factor*freq)
+        period = 1./freq
+    wave = np.zeros(shape=(len(scale), n), dtype=complex)  # define the wavelet array
 
     # loop through all scales and compute transform
-    for a1 in range(0, int(J1+1)):
-        daughter, fourier_factor, coi, dofmin = wave_bases(mother, k, scale[a1], param)
+    for a1 in range(0, len(scale)):
+        daughter, fourier_factor, coi, _ = wave_bases(mother, k, scale[a1], param)
         wave[a1, :] = np.fft.ifft(f * daughter)  # wavelet transform[Eqn(4)]
 
-    period = fourier_factor * scale  # [Table(1)]
-    coi = coi * dt * np.concatenate((np.insert(np.arange(int((n1 + 1) / 2 - 1)), [0], [1E-5]),
-        np.insert(np.flipud(np.arange(0, n1 / 2 - 1)), [-1], [1E-5])))  # COI [Sec.3g]
+    # COI [Sec.3g]
+    coi = coi * dt * np.concatenate((
+        np.insert(np.arange((n1 + 1) / 2 - 1), [0], [1E-5]),
+        np.insert(np.flipud(np.arange(0, n1 / 2 - 1)), [-1], [1E-5])))
     wave = wave[:, :n1]  # get rid of padding before returning
 
     return wave, period, scale, coi
+
 
 #-------------------------------------------------------------------------------------------------------------------
 # WAVE_BASES  1D Wavelet functions Morlet, Paul, or DOG
@@ -269,7 +292,6 @@ def wave_signif(Y, dt, scale, sigtest=0, lag1=0.0, siglvl=0.95,
     dof=None, mother='MORLET', param=None, gws=None):
     n1 = len(np.atleast_1d(Y))
     J1 = len(scale) - 1
-    s0 = np.min(scale)
     dj = np.log2(scale[1] / scale[0])
 
     if n1 == 1:
