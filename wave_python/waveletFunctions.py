@@ -143,6 +143,8 @@ def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1, freq=None):
     if freq is None:
         j = np.arange(0, J1+1)
         scale = s0 * 2. ** (j * dj)
+        freq = 1./(fourier_factor*scale)
+        period = 1./freq
     else:
         scale = 1./(fourier_factor*freq)
         period = 1./freq
