@@ -115,9 +115,10 @@ def wavelet(Y, dt, pad=0, dj=-1, s0=-1, J1=-1, mother=-1, param=-1, freq=None):
     n = len(x)
 
     #....construct wavenumber array used in transform [Eqn(5)]
-    kplus = np.arange(1, n / 2 + 1)
+    kplus = np.arange(1, int(n / 2) + 1)
     kplus = (kplus * 2 * np.pi / (n * dt))
-    kminus = (-(kplus[0:(n-1)/2])[::-1])
+    kminus = np.arange(1, int((n-1) / 2) + 1)
+    kminus = np.sort((-kminus * 2 * np.pi / (n * dt)))
     k = np.concatenate(([0.], kplus, kminus))
 
     #....compute FFT of the (padded) time series
