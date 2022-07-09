@@ -18,7 +18,7 @@ Please acknowledge the use of this software in any publications:
 ```
 Please send a copy of such publications to:
 ```
-chris.torrence[AT]colorado[DOT]edu
+chris.torrence[AT]l3harris[DOT]com
 compo[AT]colorado[DOT]edu
 ```
 
